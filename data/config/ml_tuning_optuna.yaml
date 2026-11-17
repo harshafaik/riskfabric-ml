@@ -1,0 +1,25 @@
+study_name: xgboost-fraud-tuning
+study_direction: maximize
+target_metric: pr_auc
+best_pr_auc: 0.37295120827989614
+best_roc_auc: 0.7835193811318828
+best_trial_number: 83
+n_trials: 100
+hyperparameters:
+  n_estimators: 391
+  max_depth: 7
+  learning_rate: 0.027764833557174417
+  min_child_weight: 15
+  gamma: 2.3455096061903355
+  reg_alpha: 0.5023746848467162
+  reg_lambda: 0.0011827905721379373
+  subsample: 0.9869663479549031
+  colsample_bytree: 0.8628486405023345
+  colsample_bylevel: 0.757759894575839
+  max_delta_step: 7
+  objective: binary:logistic
+  tree_method: hist
+  enable_categorical: true
+  random_state: 42
+  eval_metric: aucpr
+  scale_pos_weight: 39.719105884752864

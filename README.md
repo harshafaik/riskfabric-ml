@@ -12,43 +12,52 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 [![Deploy mdBook](https://github.com/harshafaik/riskfabric/actions/workflows/deploy_book.yml/badge.svg)](https://github.com/harshafaik/riskfabric/actions/workflows/deploy_book.yml)
 
-RiskFabric is a fraud intelligence platform designed for building fraud detection models using synthetic financial records.
+RiskFabric is the model and serving layer of a fraud intelligence system. It consumes analytical tables built from **scrip**'s deterministic synthetic feed and covers training, calibration, real-time scoring, monitoring and analyst case review. It does not generate data, and its data-engineering layer is moving to a dedicated pipeline repository.
+
+## Repositories
+
+| Repository | Responsibility | Contract it emits |
+| :--- | :--- | :--- |
+| `scrip` | OpenStreetMap world building and deterministic agent simulation | dataset — five Parquet tables |
+| `riskfabric-pipelines` | Contract-validated ingestion, star schema, orchestration | validated Bronze and analytical marts |
+| **RiskFabric** (this repository) | Training, calibration, scoring, monitoring, case review | model artifact and fraud scores |
+
+The Rust feature ETL described below still runs here. It is being replaced by `riskfabric-pipelines`; until that migration lands, this repository is the only place Bronze → Silver → Gold runs.
 
 ## System Pipeline
 
 ```mermaid
 flowchart LR
     classDef stage fill:#1b2a3a,stroke:#378ADD,stroke-width:1.5px,rx:8px,ry:8px,color:#E6F1FB,font-size:16px;
+    classDef external fill:#2a1b1b,stroke:#AD5A5A,stroke-width:1.5px,rx:8px,ry:8px,color:#FBE6E6,font-size:16px;
 
-    A["World Building<br/>OSM · PostGIS · dbt"]:::stage
-    B["Simulation Engine<br/>Rust"]:::stage
-    C["Data Pipeline<br/>Bronze → Silver → Gold"]:::stage
-    D["ML Training & Scoring<br/>XGBoost · Calibration"]:::stage
-    E["Case Management<br/>ClickHouse → Postgres → Django"]:::stage
+    A["World building<br/>OSM · H3 → Parquet<br/>scrip"]:::external
+    B["Simulation Engine<br/>Rust<br/>scrip"]:::external
+    C["Validated ingestion<br/>contracts · quarantine<br/>riskfabric-pipelines"]:::external
+    D["Feature ETL<br/>Bronze → Silver → Gold<br/>migrating out"]:::stage
+    E["Training · Calibration · Scoring<br/>XGBoost · SHAP · Monitoring"]:::stage
+    F["Case Management<br/>ClickHouse → Postgres → Django"]:::stage
 
-    A --> B --> C --> D --> E
+    A --> B --> C --> D --> E --> F
 ```
 
-**Figure 1:** System Pipeline — high-level data flow from world building through case management.
+**Figure 1:** System Pipeline — world building, simulation and validated ingestion are provided by the two sibling repositories. The feature ETL still lives here and is being retired. Everything from training onward is this repository's responsibility.
 
 ## ✨ Features
-- **Agent-Based Realism**: Simulates the full lifecycle of `Customers`, `Accounts`, and `Cards`, with behavioral spend profiles driven by real-world heuristics and deterministic seeded RNG for reproducibility.
-- **Geographic Fidelity**: Integrates **OpenStreetMap (OSM)** and **H3** hexagonal indexing for realistic spatial spend patterns and location anomalies.
-- **Sophisticated Fraud Injection**: Includes signatures for UPI Scams, Account Takeover (ATO), Card Not Present (CNP) fraud, friendly fraud, velocity abuse, and coordinated campaigns via the adversary logic engine.
 - **Real-time Scoring**: Kafka/Redpanda consumer with Redis feature store, XGBoost inference, and ClickHouse persistence.
-- **Model Explainability**: SHAP global and per-profile analysis, calibration (Platt/Isotonic), drift simulation, and a Streamlit evaluation dashboard.
+- **Model Explainability**: SHAP global and per-profile analysis, calibration (Platt/Isotonic), drift simulation, and a Grafana monitoring dashboard.
 - **Case Management**: Django admin panel backed by a dedicated PostgreSQL OLTP store for investigator review workflows.
-- **Parquet-native ETL**: Medallion architecture (bronze → silver → gold) with no-leak expanding-window features and dbt analytical models.
+- **Feature Engineering**: No-leak expanding-window features over Bronze/Silver/Gold Parquet. This layer is migrating to `riskfabric-pipelines`; the models consume whatever that pipeline produces.
 
 ## 🛠️ Tech Stack
-- **Core Engine**: Rust (generators, ETL, pipeline, streaming)
-- **Real-time Streaming**: Redpanda (Kafka-compatible), `rdkafka`, and Tokio async runtime
-- **Data Processing**: Polars (batch/streaming feature engineering)
-- **Data Warehouse**: Parquet (medallion ETL via Polars) → DuckDB (embedded training query engine) → dbt (analytical enrichment)
+- **Core Engine**: Rust (ETL, feature engineering)
+- **Real-time Streaming**: Redpanda (Kafka-compatible) with a Python scoring consumer
+- **Data Processing**: Polars (batch feature engineering)
+- **Data Warehouse**: Parquet (medallion ETL via Polars) → DuckDB (embedded training query engine)
 - **Analytical Store**: ClickHouse (fraud scores, Grafana dashboards)
 - **Operational Store**: PostgreSQL (case management OLTP)
 - **Feature Store**: Redis (real-time feature serving)
-- **Machine Learning**: XGBoost (training, inference), SHAP (explainability), Scikit-learn (calibration), Streamlit (evaluation dashboard)
+- **Machine Learning**: XGBoost (training, inference), SHAP (explainability), Scikit-learn (calibration)
 - **Infrastructure**: Podman/Docker Compose, Terraform (GCP deployment)
 - **Docs**: mdBook (published via GitHub Actions)
 
@@ -58,21 +67,22 @@ flowchart LR
 # Build
 cargo build --release
 
-# Generate synthetic data (customers, accounts, cards, transactions)
-cargo run --bin generate
+# 1. Generate synthetic data with scrip (separate project).
+#    Its Parquet output is exactly what the ETL expects in data/bronze/.
+#    Once riskfabric-pipelines owns ingestion, this step becomes `rfp run`.
+scrip generate --customers 3400 --seed 42 --days 365 \
+  --base-date 2026-01-01T00:00:00Z \
+  --input-dir references --out-dir data/bronze
 
-# Run the Parquet-native ETL pipeline (bronze → silver → gold)
+# 2. Run the Parquet-native ETL pipeline (bronze → silver → gold)
 cargo run --bin riskfabric-etl silver-all
 cargo run --bin riskfabric-etl gold-master
 
-# Train + evaluate the XGBoost model
+# 3. Train + evaluate the XGBoost model
 python src/ml/train_xgboost.py
 python src/ml/test_model.py
 
-# Launch the Streamlit evaluation dashboard
-podman compose exec scorer streamlit run src/ml/dashboard.py
-
-# Start the full stack (ClickHouse, Redpanda, Redis, scorer, case-admin, Grafana)
+# 4. Start the full stack (ClickHouse, Redpanda, Redis, scorer, case-admin, Grafana)
 podman compose up --build -d
 ```
 
@@ -84,16 +94,14 @@ podman compose up --build -d
 📁 RiskFabric
  │
  ├─ ⚙️ Engine
- │   ├─ src/ — Rust Core (generators, ETL, pipeline)
+ │   ├─ src/ — Rust ETL (Polars): bronze → silver → gold
  │   └─ Cargo.toml
  │
  ├─ 🧠 ML & Data
  │   ├─ src/ml/ — Python ML (training, scoring, explainability)
  │   ├─ models/ — XGBoost artifacts
  │   ├─ reports/ — SHAP analysis outputs
- │   ├─ warehouse/ — dbt models + PostGIS refs
- │   ├─ data/ — Configs, Parquet inputs/outputs
- │   └─ dlt/ — Data Load Tool pipelines
+ │   └─ data/ — Parquet inputs/outputs
  │
  ├─ ☁️ Ops & Infra
  │   ├─ case_admin/ — Django admin (case management)
@@ -106,7 +114,6 @@ podman compose up --build -d
 
 ## Modules
 
-- [Data Generation Modules](documentation/simulation_index.md)
 - [Data & Engineering](documentation/engineering_index.md)
 - [Machine Learning Systems](documentation/ml_systems_index.md)
 - [Infrastructure & Operations](documentation/infrastructure_index.md)

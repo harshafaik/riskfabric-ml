@@ -9,9 +9,8 @@ from sklearn.metrics import (
     precision_recall_curve,
     confusion_matrix
 )
-from sklearn.calibration import calibration_curve
 from model_utils import load_model, get_model_features
-from ml_utils import load_gold_dataframe, split_by_timestamp
+from ml_utils import load_gold_dataframe, split_by_timestamp, calculate_ece
 
 
 def run_deep_evaluation():
@@ -56,13 +55,7 @@ def run_deep_evaluation():
     # --- 2. Calibration of Predicted Probabilities ---
     brier = brier_score_loss(y, y_prob)
     
-    # Calculate ECE (Expected Calibration Error) manually
-    prob_true, prob_pred = calibration_curve(y, y_prob, n_bins=10, strategy='uniform')
-    
-    # Custom ECE calculation
     bin_edges = np.linspace(0, 1, 11)
-    ece = 0.0
-    total_samples = len(y_prob)
     
     print("\n" + "="*50)
     print("📊 PROBABILITY CALIBRATION (10 Uniform Bins)")
@@ -80,14 +73,12 @@ def run_deep_evaluation():
         if bin_count > 0:
             actual_frac = np.mean(y[in_bin])
             pred_mean = np.mean(y_prob[in_bin])
-            bin_weight = bin_count / total_samples
             bin_error = abs(pred_mean - actual_frac)
-            ece += bin_weight * bin_error
             print(f"[{bin_lower:3.1f}, {bin_upper:3.1f})     {pred_mean:<12.4f} {actual_frac:<16.4f} {bin_count:<10} {bin_error:<10.4f}")
         else:
             print(f"[{bin_lower:3.1f}, {bin_upper:3.1f})     {'N/A':<12} {'N/A':<16} {0:<10} {'0.0000':<10}")
             
-    print(f"\nExpected Calibration Error (ECE): {ece:.5f}")
+    print(f"\nExpected Calibration Error (ECE): {calculate_ece(y, y_prob):.5f}")
 
     # --- 3. Scenario-Specific Performance & Feature Stability ---
     print("\n" + "="*50)

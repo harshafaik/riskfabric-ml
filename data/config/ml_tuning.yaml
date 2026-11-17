@@ -1,0 +1,12 @@
+# XGBoost hyperparameters for fraud detection model training.
+# Loaded by train_xgboost.py at runtime. Enables Optuna sweep
+# without modifying source code.
+
+n_estimators: 100
+max_depth: 6
+learning_rate: 0.1
+objective: "binary:logistic"
+tree_method: "hist"
+enable_categorical: true
+random_state: 42
+eval_metric: "aucpr"

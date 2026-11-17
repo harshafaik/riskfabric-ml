@@ -1,53 +1,16 @@
 import polars as pl
-import xgboost as xgb
 import duckdb
 import numpy as np
-import os
 import pickle
-import glob
 import argparse
 from sklearn.metrics import (
     roc_auc_score,
     average_precision_score,
     brier_score_loss
 )
-from ml_utils import split_by_timestamp
+from ml_utils import split_by_timestamp, find_gold_snapshot, calculate_ece
 
 RNG_SEED = 42
-
-
-def calculate_ece(y_true, y_prob, n_bins=10):
-    bin_edges = np.linspace(0, 1, n_bins + 1)
-    ece = 0.0
-    total_samples = len(y_prob)
-
-    for i in range(n_bins):
-        bin_lower = bin_edges[i]
-        bin_upper = bin_edges[i+1]
-        in_bin = (y_prob >= bin_lower) & (y_prob < bin_upper) if i < n_bins - 1 else (y_prob >= bin_lower) & (y_prob <= bin_upper)
-        bin_count = np.sum(in_bin)
-
-        if bin_count > 0:
-            actual_frac = np.mean(y_true[in_bin])
-            pred_mean = np.mean(y_prob[in_bin])
-            bin_weight = bin_count / total_samples
-            bin_error = abs(pred_mean - actual_frac)
-            ece += bin_weight * bin_error
-
-    return ece
-
-
-def find_gold_snapshot(snapshot=None):
-    if snapshot:
-        path = f"data/gold/{snapshot}/fact_transactions_gold.parquet"
-        if os.path.exists(path):
-            return path
-        raise FileNotFoundError(f"Snapshot not found: {path}")
-
-    snapshots = sorted(glob.glob("data/gold/*/fact_transactions_gold.parquet"), reverse=True)
-    if not snapshots:
-        raise FileNotFoundError("No Gold snapshots found.")
-    return snapshots[0]
 
 
 def run_drift_simulation():

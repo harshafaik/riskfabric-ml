@@ -13,35 +13,15 @@ from sklearn.metrics import (
     brier_score_loss
 )
 from argparse import ArgumentParser
-from ml_utils import split_by_timestamp, find_gold_snapshot
+from ml_utils import split_by_timestamp, find_gold_snapshot, calculate_ece
 from mlflow_logging import setup_mlflow, log_metadata_artifacts
 from mlflow_wrapper import CalibratedFraudModel
-
-
-def calculate_ece(y_true, y_prob, n_bins=10):
-    bin_edges = np.linspace(0, 1, n_bins + 1)
-    ece = 0.0
-    total_samples = len(y_prob)
-
-    for i in range(n_bins):
-        bin_lower = bin_edges[i]
-        bin_upper = bin_edges[i+1]
-        in_bin = (y_prob >= bin_lower) & (y_prob < bin_upper) if i < n_bins - 1 else (y_prob >= bin_lower) & (y_prob <= bin_upper)
-        bin_count = np.sum(in_bin)
-
-        if bin_count > 0:
-            actual_frac = np.mean(y_true[in_bin])
-            pred_mean = np.mean(y_prob[in_bin])
-            bin_weight = bin_count / total_samples
-            bin_error = abs(pred_mean - actual_frac)
-            ece += bin_weight * bin_error
-
-    return ece
 
 
 def calibrate_and_evaluate():
     parser = ArgumentParser(description="Calibrate XGBoost model probabilities using Gold Parquet snapshots")
     parser.add_argument("--snapshot", type=str, default=None, help="Specific snapshot directory")
+    parser.add_argument("--mlflow-strict", action="store_true", help="Fail on MLflow errors instead of continuing")
     args = parser.parse_args()
 
     gold_path = find_gold_snapshot(args.snapshot)
@@ -178,7 +158,10 @@ def calibrate_and_evaluate():
             )
             print(f"   📊 MLflow run: {mlflow.active_run().info.run_id}")
     except Exception as e:
-        print(f"   ⚠️ MLflow logging failed (non-fatal): {e}")
+        msg = f"MLflow logging failed: {e}"
+        if args.mlflow_strict:
+            raise RuntimeError(msg) from e
+        print(f"   ⚠️ {msg} (non-fatal)")
 
 
 if __name__ == "__main__":

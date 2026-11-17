@@ -35,7 +35,7 @@ flowchart LR
 - **Geographic Fidelity**: Integrates **OpenStreetMap (OSM)** and **H3** hexagonal indexing for realistic spatial spend patterns and location anomalies.
 - **Sophisticated Fraud Injection**: Includes signatures for UPI Scams, Account Takeover (ATO), Card Not Present (CNP) fraud, friendly fraud, velocity abuse, and coordinated campaigns via the adversary logic engine.
 - **Real-time Scoring**: Kafka/Redpanda consumer with Redis feature store, XGBoost inference, and ClickHouse persistence.
-- **Model Explainability**: SHAP global and per-profile analysis, calibration (Platt/Isotonic), drift simulation, and a Streamlit evaluation dashboard.
+- **Model Explainability**: SHAP global and per-profile analysis, calibration (Platt/Isotonic), drift simulation, and a Grafana monitoring dashboard.
 - **Case Management**: Django admin panel backed by a dedicated PostgreSQL OLTP store for investigator review workflows.
 - **Parquet-native ETL**: Medallion architecture (bronze → silver → gold) with no-leak expanding-window features and dbt analytical models.
 
@@ -47,7 +47,7 @@ flowchart LR
 - **Analytical Store**: ClickHouse (fraud scores, Grafana dashboards)
 - **Operational Store**: PostgreSQL (case management OLTP)
 - **Feature Store**: Redis (real-time feature serving)
-- **Machine Learning**: XGBoost (training, inference), SHAP (explainability), Scikit-learn (calibration), Streamlit (evaluation dashboard)
+- **Machine Learning**: XGBoost (training, inference), SHAP (explainability), Scikit-learn (calibration)
 - **Infrastructure**: Podman/Docker Compose, Terraform (GCP deployment)
 - **Docs**: mdBook (published via GitHub Actions)
 
@@ -67,9 +67,6 @@ cargo run --bin riskfabric-etl gold-master
 # Train + evaluate the XGBoost model
 python src/ml/train_xgboost.py
 python src/ml/test_model.py
-
-# Launch the Streamlit evaluation dashboard
-podman compose exec scorer streamlit run src/ml/dashboard.py
 
 # Start the full stack (ClickHouse, Redpanda, Redis, scorer, case-admin, Grafana)
 podman compose up --build -d

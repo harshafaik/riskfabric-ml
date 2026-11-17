@@ -2,7 +2,7 @@
 
 ## Overview
 
-The local service stack (`docker-compose.yml`) provisions 7 services on `riskfabric_default`: ClickHouse, Redpanda, Redis, OLTP Postgres, scorer (`scorer.py`), Grafana, and Django case-admin. Mandatory runtime dependency for all Rust binaries and Python ML services. A separate Postgres instance (not in this compose file) handles world-building for `prepare_refs.rs` and `export_references.rs`.
+The local service stack (`docker-compose.yml`) provisions 8 services on `riskfabric_default`: ClickHouse, Redpanda, Redis, OLTP Postgres, scorer (`scorer.py`), Grafana, MLflow UI, and Django case-admin. Mandatory runtime dependency for all Rust binaries and Python ML services. A separate Postgres instance (not in this compose file) handles world-building for `prepare_refs.rs` and `export_references.rs`.
 
 ## Schema
 
@@ -49,6 +49,7 @@ flowchart TB
 | `grafana` | `grafana/grafana-oss:latest` | `3000` | `grafana_data` |
 | `oltp-postgres` | `postgres:15-alpine` | `5433`→host | `oltp_postgres_data` |
 | `case-admin` | built from `case_admin/Dockerfile` | `8001`→host | `case_admin/` mount |
+| `mlflow-ui` | `ghcr.io/mlflow/mlflow:v3.14.0` | `5000` | `./mlruns` mount |
 
 ## Architecture
 

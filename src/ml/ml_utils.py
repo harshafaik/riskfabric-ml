@@ -1,6 +1,7 @@
 import os
 import glob
 import duckdb
+import numpy as np
 import polars as pl
 
 
@@ -23,6 +24,23 @@ def load_gold_dataframe(snapshot=None):
     df = pl.from_arrow(conn.execute(f"SELECT * FROM '{gold_path}'").arrow())
     conn.close()
     return df
+
+
+def calculate_ece(y_true, y_prob, n_bins=10):
+    """Expected Calibration Error over uniform probability bins."""
+    bin_edges = np.linspace(0, 1, n_bins + 1)
+    ece = 0.0
+    total_samples = len(y_prob)
+
+    for i in range(n_bins):
+        lo, hi = bin_edges[i], bin_edges[i + 1]
+        in_bin = (y_prob >= lo) & (y_prob < hi) if i < n_bins - 1 else (y_prob >= lo) & (y_prob <= hi)
+        bin_count = np.sum(in_bin)
+        if bin_count > 0:
+            bin_error = abs(np.mean(y_prob[in_bin]) - np.mean(y_true[in_bin]))
+            ece += (bin_count / total_samples) * bin_error
+
+    return ece
 
 
 def split_by_timestamp(df, test_size=0.2):

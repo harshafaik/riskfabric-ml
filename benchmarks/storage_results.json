@@ -1,0 +1,29 @@
+{
+  "hardware": {
+    "hostname": "fedora",
+    "os": "Linux 7.0.11-200.fc44.x86_64",
+    "python": "3.14.5",
+    "cpu_model": "unknown",
+    "logical_cores": 16,
+    "physical_cores": 8,
+    "ram_gb": 15.0,
+    "ram_available_gb": 8.4,
+    "disk_type": "btrfs",
+    "disk_total_gb": 475.4
+  },
+  "gold_snapshot": "data/gold/20260728_094759/fact_transactions_gold.parquet",
+  "gold_size_mb": 101.88080978393555,
+  "timestamp": "2026-07-28T15:38:41.482595",
+  "duckdb": {
+    "p50": 1616.2609829989378,
+    "p95": 1716.3092057999165,
+    "p99": 1727.4084507596854,
+    "mean_ms": 1626.3790451994282
+  },
+  "clickhouse": {
+    "p50": 2038.70906299926,
+    "p95": 2334.0718584011483,
+    "p99": 2349.3897236812336,
+    "mean_ms": 1995.3162014004192
+  }
+}

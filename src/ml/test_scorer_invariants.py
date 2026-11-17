@@ -7,6 +7,7 @@ and after every feature or pipeline change.
 import os
 import pickle
 import time
+from datetime import datetime
 import pytest
 from unittest.mock import MagicMock
 
@@ -103,11 +104,11 @@ def test_time_since_last_positive_when_prior_exists(mock_redis):
     If it's 0 with a prior timestamp, the delta computation is broken
     (e.g. subtracting a future timestamp, or misinterpreting the stored value).
     """
-    now = time.time()
-    prior = now - 60  # 60 seconds ago
-    mock_redis.get.return_value = str(prior)
+    tx = make_tx()
+    tx_ts = datetime.fromisoformat(tx["timestamp"].replace("Z", "+00:00")).timestamp()
+    mock_redis.get.return_value = str(tx_ts - 60)  # 60 seconds before the transaction
 
-    features = compute_features(make_tx(), mock_redis)
+    features = compute_features(tx, mock_redis)
 
     assert features["time_since_last_transaction"] > 0, (
         f"Expected positive time_since_last_transaction when prior timestamp exists, "

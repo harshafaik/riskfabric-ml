@@ -11,11 +11,13 @@ from ml_utils import split_by_timestamp, find_gold_snapshot
 from mlflow_logging import setup_mlflow
 
 DEFAULT_TUNING_PATH = "data/config/ml_tuning.yaml"
+OPTUNA_TUNING_PATH = "data/config/ml_tuning_optuna.yaml"
 
 
 def train_model():
     parser = ArgumentParser(description="Train XGBoost fraud detection model from Gold Parquet snapshots")
     parser.add_argument("--snapshot", type=str, default=None, help="Specific snapshot directory (e.g., 20260716_120000)")
+    parser.add_argument("--mlflow-strict", action="store_true", help="Fail on MLflow errors instead of continuing")
     args = parser.parse_args()
 
     gold_path = find_gold_snapshot(args.snapshot)
@@ -77,8 +79,14 @@ def train_model():
     scale_pos_weight = legitimate_count / fraud_count
     print(f"⚖️ Scale positive weight: {scale_pos_weight:.4f}")
 
-    # Load hyperparameters from config (with fallback defaults)
-    if os.path.exists(DEFAULT_TUNING_PATH):
+    # Load hyperparameters: Optuna output takes precedence over manual config
+    if os.path.exists(OPTUNA_TUNING_PATH):
+        with open(OPTUNA_TUNING_PATH) as f:
+            raw = yaml.safe_load(f) or {}
+        tuning = raw.get("hyperparameters", raw)
+        scale_pos_weight = tuning.get("scale_pos_weight", scale_pos_weight)
+        print("📐 Using Optuna-tuned hyperparameters")
+    elif os.path.exists(DEFAULT_TUNING_PATH):
         with open(DEFAULT_TUNING_PATH) as f:
             tuning = yaml.safe_load(f) or {}
     else:
@@ -88,6 +96,14 @@ def train_model():
         n_estimators=tuning.get("n_estimators", 100),
         max_depth=tuning.get("max_depth", 6),
         learning_rate=tuning.get("learning_rate", 0.1),
+        min_child_weight=tuning.get("min_child_weight", 1),
+        gamma=tuning.get("gamma", 0),
+        reg_alpha=tuning.get("reg_alpha", 0),
+        reg_lambda=tuning.get("reg_lambda", 1),
+        subsample=tuning.get("subsample", 1.0),
+        colsample_bytree=tuning.get("colsample_bytree", 1.0),
+        colsample_bylevel=tuning.get("colsample_bylevel", 1.0),
+        max_delta_step=tuning.get("max_delta_step", 0),
         objective=tuning.get("objective", "binary:logistic"),
         tree_method=tuning.get("tree_method", "hist"),
         enable_categorical=tuning.get("enable_categorical", True),
@@ -130,12 +146,21 @@ def train_model():
                 "n_estimators": tuning.get("n_estimators", 100),
                 "max_depth": tuning.get("max_depth", 6),
                 "learning_rate": tuning.get("learning_rate", 0.1),
+                "min_child_weight": tuning.get("min_child_weight", 1),
+                "gamma": tuning.get("gamma", 0),
+                "reg_alpha": tuning.get("reg_alpha", 0),
+                "reg_lambda": tuning.get("reg_lambda", 1),
+                "subsample": tuning.get("subsample", 1.0),
+                "colsample_bytree": tuning.get("colsample_bytree", 1.0),
+                "colsample_bylevel": tuning.get("colsample_bylevel", 1.0),
+                "max_delta_step": tuning.get("max_delta_step", 0),
                 "objective": tuning.get("objective", "binary:logistic"),
                 "tree_method": tuning.get("tree_method", "hist"),
                 "scale_pos_weight": float(scale_pos_weight),
                 "random_state": tuning.get("random_state", 42),
                 "eval_metric": tuning.get("eval_metric", "aucpr"),
                 "feature_count": len(feature_cols),
+                "tuning_source": "optuna" if os.path.exists(OPTUNA_TUNING_PATH) else "manual",
             })
             mlflow.log_metrics({
                 "roc_auc": float(auc),
@@ -153,7 +178,10 @@ def train_model():
             mlflow.log_artifact(DEFAULT_TUNING_PATH, artifact_path="config")
             print(f"   📊 MLflow run: {mlflow.active_run().info.run_id}")
     except Exception as e:
-        print(f"   ⚠️ MLflow logging failed (non-fatal): {e}")
+        msg = f"MLflow logging failed: {e}"
+        if args.mlflow_strict:
+            raise RuntimeError(msg) from e
+        print(f"   ⚠️ {msg} (non-fatal)")
 
 
 if __name__ == "__main__":

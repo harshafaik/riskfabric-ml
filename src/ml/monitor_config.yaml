@@ -1,0 +1,19 @@
+monitor:
+  interval_seconds: 60
+  min_samples: 10
+  reports_dir: "data/monitor/reports"
+  max_reports: 50
+  score_window_offset_seconds: 120
+  score_window_duration_seconds: 60
+
+clickhouse:
+  host: "${CLICKHOUSE_HOST:-clickhouse}"
+  port: 9000
+  user: "riskfabric_user"
+  password: "123"
+  database: "riskfabric"
+
+evidently:
+  report_format: ["html", "json"]
+  reference_sample_size: 10000
+  reference_refresh_seconds: 3600

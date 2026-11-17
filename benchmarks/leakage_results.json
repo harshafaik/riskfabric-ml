@@ -1,0 +1,29 @@
+{
+  "hardware": {
+    "hostname": "fedora",
+    "os": "Linux 7.0.11-200.fc44.x86_64",
+    "python": "3.14.5",
+    "cpu_model": "unknown",
+    "logical_cores": 16,
+    "physical_cores": 16,
+    "ram_gb": "psutil not available",
+    "ram_available_gb": "psutil not available",
+    "disk_type": "unknown",
+    "disk_total_gb": "unknown"
+  },
+  "gold_snapshot": "data/gold/20260716_145639/fact_transactions_gold.parquet",
+  "timestamp": "2026-07-28T15:11:44.253735",
+  "documented_history": {
+    "leak1_amount_shortcut": 0.9079,
+    "leak3_tuned_amount_no_behavioral": 0.796,
+    "leak4_target_encoding": 0.925,
+    "leak6_random_split": 0.786,
+    "final_honest": 0.7622
+  },
+  "ablation_results": {
+    "Honest baseline (chronological split)": 0.7621527383445301,
+    "  + amount feature": 0.7625519839028899,
+    "  + target encoding (mf/cf_fraud_rate)": 0.9633565178850565,
+    "  + random split": 0.7837710856686432
+  }
+}

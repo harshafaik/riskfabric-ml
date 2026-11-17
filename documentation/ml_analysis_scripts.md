@@ -29,24 +29,6 @@ Lightweight model smoke test. Loads the trained model, reads the Gold Parquet sn
 **Consumes:** Latest model JSON from `models/` (auto-discovered via `model_utils`), Gold Parquet snapshot.
 **Produces:** Classification report.
 
-### `src/ml/generate_and_score_transactions.py`
-End-to-end pipeline harness. Generates synthetic transactions (using Python-side logic that mirrors the Rust `generate.rs` binary), scores them through the trained XGBoost model, seeds Redis with customer running statistics for the real-time scorer, and writes flagged cases to OLTP Postgres. Used for local, non-Rust integration testing.
-
-**Consumes:** Redis, OLTP Postgres, latest model JSON from `models/` (auto-discovered via `model_utils`).
-**Produces:** Scored transactions in Postgres `cases` table, Redis customer stats.
-
-### `src/ml/generate_1m_transactions.py`
-Bulk transaction generator for load testing. Generates 1 million synthetic transactions via Python-side logic, writes them to Redis and directly to the OLTP Postgres database. Used to stress-test the real-time scorer and case admin ingestion pipeline at scale.
-
-**Consumes:** Redis, OLTP Postgres.
-**Produces:** 1M transactions in Redis and Postgres.
-
-### `src/ml/dashboard.py` (DEPRECATED)
-Replaced by Grafana (`docker/grafana/dashboards/fraud-monitoring.json`). Reads from ClickHouse (`fraud_scores` table) to display live fraud score distributions, volume trends, and alert dashboards. The file is kept for reference only.
-
-**Consumes:** ClickHouse `fraud_scores` table.
-**Produces:** Grafana web dashboard on port 3000 (replaced Streamlit on port 8501).
-
 ### `src/ml/dump_model.py`
 Inspects a trained XGBoost model to verify the feature schema before deployment. Reads the latest model JSON from `models/` via `model_utils`, prints `feature_names` and `feature_types` from the booster object, extracts categorical level encodings via proper JSON path traversal (not regex), and exports a structured `models/schema.json` with feature names, types, indices, and categorical mappings.
 
@@ -54,4 +36,4 @@ Inspects a trained XGBoost model to verify the feature schema before deployment.
 **Produces:** `models/schema.json` (feature schema for deployment verification).
 
 ## Pipeline Position
-All analysis scripts read from Gold Parquet snapshots via DuckDB and the trained model artifacts in `models/`. They operate independently of the streaming pipeline and do not write back to Redis. The `generate_and_score_transactions.py` and `generate_1m_transactions.py` scripts are the exception — they write directly to Postgres and Redis for integration testing and load testing.
+All analysis scripts read from Gold Parquet snapshots via DuckDB and the trained model artifacts in `models/`. They operate independently of the streaming pipeline and do not write back to Redis.

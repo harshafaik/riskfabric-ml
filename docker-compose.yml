@@ -80,6 +80,20 @@ services:
       oltp-postgres:
         condition: service_healthy
 
+  monitor:
+    image: localhost/riskfabric_dlt
+    container_name: riskfabric_monitor
+    volumes:
+      - .:/usr/app:z
+    working_dir: /usr/app
+    environment:
+      - CLICKHOUSE_HOST=clickhouse
+      - PYTHONUNBUFFERED=1
+    command: python src/ml/monitor.py
+    depends_on:
+      clickhouse:
+        condition: service_healthy
+
   grafana:
     image: grafana/grafana-oss:latest
     container_name: riskfabric_grafana
@@ -108,6 +122,7 @@ services:
       - "5433:5432"
     volumes:
       - oltp_postgres_data:/var/lib/postgresql/data
+      - ./docker/postgres-init:/docker-entrypoint-initdb.d:z
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U riskfabric_oltp_user -d riskfabric_oltp"]
       interval: 5s

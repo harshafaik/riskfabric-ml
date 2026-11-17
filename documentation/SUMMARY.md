@@ -23,6 +23,9 @@
     - [Model Explainability (SHAP)](components/ml_explainability.md)
     - [Model Robustness & Drift](components/ml_robustness.md)
     - [Analysis & Utility Scripts](ml_analysis_scripts.md)
+    - [MLflow Experiment Tracking & Model Registry](components/ml_tooling_mlflow.md)
+    - [Optuna Hyperparameter Tuning](components/ml_tooling_optuna.md)
+    - [Evidently Model Monitoring](components/ml_tooling_evidently.md)
 
 - [Infrastructure & Operations](infrastructure_index.md)
     - [Infrastructure & Local Stack](components/infrastructure.md)
@@ -49,3 +52,4 @@
     - [Deployment Architecture](decisions/deployment_architecture.md)
     - [Fraud Operations Cost Model](decisions/fraud_operations_cost_model.md)
     - [Calibration Gap](decisions/calibration_gap.md)
+    - [Prior-Only Windows & Customer Fraud](decisions/prior_only_windows_and_customer_fraud.md)

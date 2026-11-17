@@ -2,7 +2,7 @@
 
 ## Overview
 
-`prepare_refs.rs` converts the India OSM PBF file into three Postgres staging tables (`raw_residential`, `raw_merchants`, `raw_financial`) consumed by `export_references.rs` → Parquet for `generate.rs`, `stream.rs`, and `customer_gen.rs`. Six subcommands: `extract-nodes`, `map-city-state`, `parse-districts`, `map-state-districts`, `normalize-states`, `compare-city-district`.
+`prepare_refs.rs` converts the India OSM PBF file into three Postgres staging tables (`raw_residential`, `raw_merchants`, `raw_financial`) consumed by `export_references.rs` → Parquet for `generate.rs`, `stream.rs`, and `customer_gen.rs`. The single `extract-nodes` subcommand performs the extraction.
 
 ## Schema
 
@@ -57,9 +57,6 @@ Records are written to Postgres via `BinaryCopyInWriter` in a single `COPY FROM 
 
 ### H3 Indexing at Resolution 8
 `h3o` converts each `(lat, lon)` to an H3 cell (~0.74 km²) at extraction time. The index flows through all downstream tables and Parquet files, enabling proximity-based merchant selection without runtime coordinate re-computation.
-
-### State Normalization Utilities
-`map-city-state` produces ranked city-to-state frequency reports. `parse-districts` extracts India admin level-5 relations. Intermediate report files feed normalization rules applied in dbt staging.
 
 ## Current Limitations
 

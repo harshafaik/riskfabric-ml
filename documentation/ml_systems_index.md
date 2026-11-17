@@ -29,18 +29,10 @@ flowchart TB
     end
     MODEL --> SCORER
 
-    subgraph BATCH["Batch Utilities"]
-        direction LR
-        GEN_1M["generate_1m_transactions.py<br/>Large-scale Gen"]:::script
-        GEN_SCORE["generate_and_score.py<br/>Combined Pipeline"]:::script
-    end
-    MODEL -.-> GEN_SCORE
-
     style TRAIN fill:#28201b,stroke:#4c392c,stroke-width:1px,stroke-dasharray: 3 3,color:#cfd2d9
     style T1 fill:none,stroke:none,color:#cfd2d9
     style T2 fill:none,stroke:none,color:#cfd2d9
     style SERVING fill:#1c2423,stroke:#2e403d,stroke-width:1px,stroke-dasharray: 3 3,color:#cfd2d9
-    style BATCH fill:#231e2d,stroke:#3f3354,stroke-width:1px,stroke-dasharray: 3 3,color:#cfd2d9
 ```
 
 **<a id="fig-7"></a>Figure 7:** Python ML Pipeline
@@ -53,3 +45,9 @@ flowchart TB
 - [Model Explainability (SHAP)](components/ml_explainability.md)
 - [Model Robustness & Drift](components/ml_robustness.md)
 - [Analysis & Utility Scripts](ml_analysis_scripts.md)
+
+### ML Tooling
+
+- [MLflow Experiment Tracking & Model Registry](components/ml_tooling_mlflow.md)
+- [Optuna Hyperparameter Tuning](components/ml_tooling_optuna.md)
+- [Evidently Model Monitoring](components/ml_tooling_evidently.md)

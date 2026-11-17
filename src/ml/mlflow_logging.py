@@ -13,17 +13,6 @@ def setup_mlflow(experiment_name="Fraud Detection Pipeline"):
     mlflow.set_experiment(experiment_name)
 
 
-def get_or_create_experiment(name="Fraud Detection Pipeline"):
-    import mlflow
-
-    experiment = mlflow.get_experiment_by_name(name)
-    if experiment is None:
-        experiment_id = mlflow.create_experiment(name)
-    else:
-        experiment_id = experiment.experiment_id
-    return experiment_id
-
-
 def log_metadata_artifacts(feature_names, feature_types, calibration_method):
     tmpdir = tempfile.mkdtemp()
 

@@ -86,11 +86,20 @@ pub fn transform_sequence_features(lf: LazyFrame, fraud_meta_lf: LazyFrame) -> L
         // Spatial Distance
         (((col("location_lat") - col("prev_lat")).pow(2.0) + (col("location_long") - col("prev_lon")).pow(2.0)).sqrt() * lit(111.0))
             .alias("distance_km"),
-        // Hour Deviation (expanding window — no leakage)
+        // Hour Deviation — prior-only expanding window (excludes current row)
         ({
-            let hour_cnt = col("txn_hour").cum_count(false).over([col("customer_id")]);
-            let hour_mean = col("txn_hour").cum_sum(false).over([col("customer_id")]) / hour_cnt.clone();
-            ((col("txn_hour") - hour_mean).pow(2.0).sqrt()).alias("hour_deviation_from_norm")
+            let hour_cnt_prev = col("txn_hour").cum_count(false).over([col("customer_id")]).shift(lit(1));
+            let hour_sum_prev = col("txn_hour").cum_sum(false).over([col("customer_id")]).shift(lit(1));
+            let hour_mean = hour_sum_prev.clone() / hour_cnt_prev.clone();
+            when(hour_cnt_prev.is_null())
+                .then(lit(0.0))
+                .otherwise({
+                    let raw = (col("txn_hour") - hour_mean).pow(2.0).sqrt();
+                    when(raw.clone().is_finite())
+                        .then(raw.clone())
+                        .otherwise(lit(0.0))
+                })
+                .alias("hour_deviation_from_norm")
         }),
         // Amount Round Number
         ((col("amount") % lit(1.0)).eq(lit(0.0))
@@ -98,19 +107,23 @@ pub fn transform_sequence_features(lf: LazyFrame, fraud_meta_lf: LazyFrame) -> L
             .or((col("amount") % lit(10.0)).eq(lit(0.0))))
             .cast(DataType::UInt32)
             .alias("amount_round_number_flag"),
-        // Z-score (expanding window — no leakage)
+        // Z-score — prior-only expanding window (excludes current row, first row = 0)
         ({
-            let cnt = col("amount").cum_count(false).over([col("customer_id")]).cast(DataType::Float64);
-            let sum_x = col("amount").cum_sum(false).over([col("customer_id")]);
-            let sum_x2 = col("amount").pow(2.0).cum_sum(false).over([col("customer_id")]);
-            let mean = sum_x.clone() / cnt.clone();
-            let pop_var = sum_x2 / cnt.clone() - mean.clone().pow(2.0);
-            let sample_var = pop_var.clone() * cnt.clone() / (cnt.clone() - lit(1.0));
+            let cnt_prev = col("amount").cum_count(false).over([col("customer_id")]).cast(DataType::Float64).shift(lit(1));
+            let sum_x = col("amount").cum_sum(false).over([col("customer_id")]).shift(lit(1));
+            let sum_x2 = col("amount").pow(2.0).cum_sum(false).over([col("customer_id")]).shift(lit(1));
+            let mean = sum_x.clone() / cnt_prev.clone();
+            let pop_var = sum_x2.clone() / cnt_prev.clone() - mean.clone().pow(2.0);
+            let sample_var = pop_var.clone() * cnt_prev.clone() / (cnt_prev.clone() - lit(1.0));
             let std_dev = sample_var.sqrt().fill_nan(lit(0.0));
-            when(cnt.clone().lt_eq(lit(1.0)))
+            when(cnt_prev.clone().is_null().or(cnt_prev.clone().lt_eq(lit(1.0))))
                 .then(lit(0.0))
-                .otherwise((col("amount") - mean) / std_dev)
-                .fill_nan(lit(0.0))
+                .otherwise({
+                    let raw = (col("amount") - mean) / std_dev;
+                    when(raw.clone().is_finite())
+                        .then(raw.clone())
+                        .otherwise(lit(0.0))
+                })
         })
         .alias("amount_deviation_z_score"),
         // Rapid Fire
