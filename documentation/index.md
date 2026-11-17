@@ -18,7 +18,7 @@ It does not generate data.
 
 | Repository | Responsibility | Contract it emits |
 | :--- | :--- | :--- |
-| `scrip` | OpenStreetMap world building and deterministic agent simulation | dataset — five Parquet tables |
+| [`scrip`](https://github.com/harshafaik/scrip) | OpenStreetMap world building and deterministic agent simulation | dataset — five Parquet tables |
 | [`riskfabric-pipelines`](https://github.com/harshafaik/riskfabric-pipelines) | Contract-validated ingestion, star schema, orchestration | validated Bronze and analytical marts |
 | **riskfabric-ml** (this repository) | Feature engineering, training, calibration, scoring, monitoring, case review | model artifact and fraud scores |
 | [`RiskFabric`](https://github.com/harshafaik/RiskFabric) (archived) | Original end-to-end monolith | — |
