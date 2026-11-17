@@ -1,0 +1,280 @@
+<!DOCTYPE HTML>
+<html lang="en" class="light" dir="ltr">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>Machine Learning Systems - riskfabric-ml Documentation</title>
+
+
+        <!-- Custom HTML head -->
+        
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff">
+
+        <link rel="icon" href="favicon.svg">
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
+        <link rel="stylesheet" href="fonts/fonts.css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" href="highlight.css">
+        <link rel="stylesheet" href="tomorrow-night.css">
+        <link rel="stylesheet" href="ayu-highlight.css">
+
+        <!-- Custom theme stylesheets -->
+        <link rel="stylesheet" href="documentation/custom.css">
+
+    </head>
+    <body class="sidebar-visible no-js">
+    <div id="body-container">
+        <!-- Provide site root to javascript -->
+        <script>
+            var path_to_root = "";
+            var default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "navy" : "light";
+        </script>
+
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script>
+            try {
+                var theme = localStorage.getItem('mdbook-theme');
+                var sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script>
+            var theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            var html = document.querySelector('html');
+            html.classList.remove('light')
+            html.classList.add(theme);
+            var body = document.querySelector('body');
+            body.classList.remove('no-js')
+            body.classList.add('js');
+        </script>
+
+        <input type="checkbox" id="sidebar-toggle-anchor" class="hidden">
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script>
+            var body = document.querySelector('body');
+            var sidebar = null;
+            var sidebar_toggle = document.getElementById("sidebar-toggle-anchor");
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            } else {
+                sidebar = 'hidden';
+            }
+            sidebar_toggle.checked = sidebar === 'visible';
+            body.classList.remove('sidebar-visible');
+            body.classList.add("sidebar-" + sidebar);
+        </script>
+
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+            <div class="sidebar-scrollbox">
+                <ol class="chapter"><li class="chapter-item expanded "><a href="index.html"><strong aria-hidden="true">1.</strong> Welcome</a></li><li class="chapter-item expanded "><a href="engineering_index.html"><strong aria-hidden="true">2.</strong> Data & Engineering</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="components/etl_system.html"><strong aria-hidden="true">2.1.</strong> Feature Engineering Pipeline</a></li></ol></li><li class="chapter-item expanded "><a href="ml_systems_index.html" class="active"><strong aria-hidden="true">3.</strong> Machine Learning Systems</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="components/ml_training.html"><strong aria-hidden="true">3.1.</strong> Training Pipeline</a></li><li class="chapter-item expanded "><a href="components/ml_calibration.html"><strong aria-hidden="true">3.2.</strong> Model Calibration</a></li><li class="chapter-item expanded "><a href="components/realtime_scorer.html"><strong aria-hidden="true">3.3.</strong> Real-Time Scoring Service</a></li><li class="chapter-item expanded "><a href="components/ml_explainability.html"><strong aria-hidden="true">3.4.</strong> Model Explainability (SHAP)</a></li><li class="chapter-item expanded "><a href="components/ml_robustness.html"><strong aria-hidden="true">3.5.</strong> Model Robustness & Drift</a></li><li class="chapter-item expanded "><a href="ml_analysis_scripts.html"><strong aria-hidden="true">3.6.</strong> Analysis & Utility Scripts</a></li><li class="chapter-item expanded "><a href="components/ml_tooling_mlflow.html"><strong aria-hidden="true">3.7.</strong> MLflow Experiment Tracking & Model Registry</a></li><li class="chapter-item expanded "><a href="components/ml_tooling_optuna.html"><strong aria-hidden="true">3.8.</strong> Optuna Hyperparameter Tuning</a></li><li class="chapter-item expanded "><a href="components/ml_tooling_evidently.html"><strong aria-hidden="true">3.9.</strong> Evidently Model Monitoring</a></li></ol></li><li class="chapter-item expanded "><a href="infrastructure_index.html"><strong aria-hidden="true">4.</strong> Infrastructure & Operations</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="components/infrastructure.html"><strong aria-hidden="true">4.1.</strong> Infrastructure & Local Stack</a></li><li class="chapter-item expanded "><a href="components/case_admin.html"><strong aria-hidden="true">4.2.</strong> Django Case Management UI</a></li><li class="chapter-item expanded "><a href="components/redis_seeder.html"><strong aria-hidden="true">4.3.</strong> Redis Feature Seeder</a></li></ol></li><li class="chapter-item expanded "><a href="concepts_index.html"><strong aria-hidden="true">5.</strong> Conceptual Explanations</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="theory_of_operation.html"><strong aria-hidden="true">5.1.</strong> Theory of Operation</a></li><li class="chapter-item expanded "><a href="fraud_signatures.html"><strong aria-hidden="true">5.2.</strong> Fraud Signatures & Attack Patterns</a></li><li class="chapter-item expanded "><a href="diagrams_glossary.html"><strong aria-hidden="true">5.3.</strong> Diagram Glossary</a></li></ol></li><li class="chapter-item expanded "><a href="results_index.html"><strong aria-hidden="true">6.</strong> Results & Monitoring</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="ml_metrics.html"><strong aria-hidden="true">6.1.</strong> Machine Learning Metrics</a></li><li class="chapter-item expanded "><a href="feature_leakage_issues.html"><strong aria-hidden="true">6.2.</strong> Feature Leakage Case Study</a></li><li class="chapter-item expanded "><a href="performance.html"><strong aria-hidden="true">6.3.</strong> Performance Benchmarks</a></li></ol></li><li class="chapter-item expanded "><a href="defunct_index.html"><strong aria-hidden="true">7.</strong> Defunct Implementations</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="simulation_index.html"><strong aria-hidden="true">7.1.</strong> Legacy Data Generation (moved to scrip)</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="components/customer_generator.html"><strong aria-hidden="true">7.1.1.</strong> Customer Data Generator</a></li><li class="chapter-item expanded "><a href="components/account_and_card_generator.html"><strong aria-hidden="true">7.1.2.</strong> Account and Card Data Generator</a></li><li class="chapter-item expanded "><a href="components/transaction_generator.html"><strong aria-hidden="true">7.1.3.</strong> Transactional Data Generator</a></li><li class="chapter-item expanded "><a href="components/batch_generator.html"><strong aria-hidden="true">7.1.4.</strong> Batch Orchestrator</a></li><li class="chapter-item expanded "><a href="components/streaming_generator.html"><strong aria-hidden="true">7.1.5.</strong> Streaming Orchestrator</a></li><li class="chapter-item expanded "><a href="components/adversary_logic_engine.html"><strong aria-hidden="true">7.1.6.</strong> Fraud Injector</a></li><li class="chapter-item expanded "><a href="components/configuration.html"><strong aria-hidden="true">7.1.7.</strong> Configuration Module</a></li></ol></li><li class="chapter-item expanded "><a href="components/dbt_models.html"><strong aria-hidden="true">7.2.</strong> Geospatial Reference Pipeline (moved to scrip)</a></li><li class="chapter-item expanded "><a href="components/reference_preparator.html"><strong aria-hidden="true">7.3.</strong> OSM Reference Extractor (moved to scrip)</a></li><li class="chapter-item expanded "><a href="components/defunct/etl_system_shell_pivot.html"><strong aria-hidden="true">7.4.</strong> ETL Pipeline System (Shell-Pivot Variant)</a></li><li class="chapter-item expanded "><a href="components/defunct/clickhouse_batch_etl.html"><strong aria-hidden="true">7.5.</strong> ClickHouse Batch ETL Architecture</a></li></ol></li><li class="chapter-item expanded "><a href="decisions_index.html"><strong aria-hidden="true">8.</strong> Decisions</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="decisions/ip_device_reputation_removal.html"><strong aria-hidden="true">8.1.</strong> IP and Device Reputation Removal</a></li><li class="chapter-item expanded "><a href="decisions/storage_architecture_split.html"><strong aria-hidden="true">8.2.</strong> Storage Architecture Split</a></li><li class="chapter-item expanded "><a href="decisions/deployment_architecture.html"><strong aria-hidden="true">8.3.</strong> Deployment Architecture</a></li><li class="chapter-item expanded "><a href="decisions/fraud_operations_cost_model.html"><strong aria-hidden="true">8.4.</strong> Fraud Operations Cost Model</a></li><li class="chapter-item expanded "><a href="decisions/calibration_gap.html"><strong aria-hidden="true">8.5.</strong> Calibration Gap</a></li><li class="chapter-item expanded "><a href="decisions/prior_only_windows_and_customer_fraud.html"><strong aria-hidden="true">8.6.</strong> Prior-Only Windows & Customer Fraud</a></li></ol></li></ol>
+            </div>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle">
+                <div class="sidebar-resize-indicator"></div>
+            </div>
+        </nav>
+
+        <!-- Track and set sidebar scroll position -->
+        <script>
+            var sidebarScrollbox = document.querySelector('#sidebar .sidebar-scrollbox');
+            sidebarScrollbox.addEventListener('click', function(e) {
+                if (e.target.tagName === 'A') {
+                    sessionStorage.setItem('sidebar-scroll', sidebarScrollbox.scrollTop);
+                }
+            }, { passive: true });
+            var sidebarScrollTop = sessionStorage.getItem('sidebar-scroll');
+            sessionStorage.removeItem('sidebar-scroll');
+            if (sidebarScrollTop) {
+                // preserve sidebar scroll position when navigating via links within sidebar
+                sidebarScrollbox.scrollTop = sidebarScrollTop;
+            } else {
+                // scroll sidebar to current active section when navigating via "next/previous chapter" buttons
+                var activeSection = document.querySelector('#sidebar .active');
+                if (activeSection) {
+                    activeSection.scrollIntoView({ block: 'center' });
+                }
+            }
+        </script>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                                <div id="menu-bar-hover-placeholder"></div>
+                <div id="menu-bar" class="menu-bar sticky">
+                    <div class="left-buttons">
+                        <label id="sidebar-toggle" class="icon-button" for="sidebar-toggle-anchor" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                            <i class="fa fa-bars"></i>
+                        </label>
+                        <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                            <i class="fa fa-paint-brush"></i>
+                        </button>
+                        <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="light">Light</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
+                        </ul>
+                        <button id="search-toggle" class="icon-button" type="button" title="Search. (Shortkey: s)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="S" aria-controls="searchbar">
+                            <i class="fa fa-search"></i>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title">riskfabric-ml Documentation</h1>
+
+                    <div class="right-buttons">
+                        <a href="print.html" title="Print this book" aria-label="Print this book">
+                            <i id="print-button" class="fa fa-print"></i>
+                        </a>
+                        <a href="https://github.com/harshafaik/riskfabric-ml" title="Git repository" aria-label="Git repository">
+                            <i id="git-repository-button" class="fa fa-github"></i>
+                        </a>
+
+                    </div>
+                </div>
+
+                <div id="search-wrapper" class="hidden">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <input type="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                    </form>
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script>
+                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="content" class="content">
+                    <main>
+                        <h1 id="machine-learning-systems"><a class="header" href="#machine-learning-systems">Machine Learning Systems</a></h1>
+<p>This section documents the model training pipelines, real-time inference services, and metadata utilities required for detecting synthetic fraud patterns.</p>
+<h2 id="python-ml-pipeline-srcml"><a class="header" href="#python-ml-pipeline-srcml">Python ML Pipeline (<code>src/ml/</code>)</a></h2>
+<pre><code class="language-mermaid">flowchart TB
+    classDef script fill:#22252a,stroke:#4d535b,stroke-width:1px,rx:5px,ry:5px,color:#cfd2d9;
+    classDef store fill:#1b2a3a,stroke:#304e70,stroke-width:1px,rx:5px,ry:5px,color:#cfd2d9;
+    subgraph TRAIN["Training &amp; Evaluation Pipeline"]
+        direction TB
+        subgraph T1["Training &amp; Calibration"]
+            direction LR
+            TRAIN_PY["train_xgboost.py&lt;br/&gt;XGBoost Model"]:::script --&gt; CAL["calibrate_model.py&lt;br/&gt;Platt / Isotonic"]:::script --&gt; THRESH["compute_thresholds.py&lt;br/&gt;PR Threshold Opt"]:::script
+        end
+        subgraph T2["Explainability &amp; Export"]
+            direction LR
+            SHAP["shap_analysis.py&lt;br/&gt;Global / Local SHAP"]:::script --&gt; LOCAL_SHAP["verify_leakage.py&lt;br/&gt;Leakage &amp; Drift Audit"]:::script --&gt; DUMP["dump_model.py&lt;br/&gt;Model Serialization"]:::script
+        end
+        T1 --&gt; T2
+    end
+    MODEL[("Serialized Model&lt;br/&gt;Artifact")]:::store
+    DUMP --&gt; MODEL
+
+    subgraph SERVING["Real-time Serving Pipeline"]
+        direction LR
+        SEED["seed_redis.py&lt;br/&gt;Pre-seed Redis"]:::script --&gt; SCORER["scorer.py&lt;br/&gt;Kafka → XGBoost"]:::script --&gt; INGEST["ingest_cases.py&lt;br/&gt;ClickHouse → Postgres"]:::script
+    end
+    MODEL --&gt; SCORER
+
+    style TRAIN fill:#28201b,stroke:#4c392c,stroke-width:1px,stroke-dasharray: 3 3,color:#cfd2d9
+    style T1 fill:none,stroke:none,color:#cfd2d9
+    style T2 fill:none,stroke:none,color:#cfd2d9
+    style SERVING fill:#1c2423,stroke:#2e403d,stroke-width:1px,stroke-dasharray: 3 3,color:#cfd2d9
+</code></pre>
+<p><strong><a id="fig-7"></a>Figure 7:</strong> Python ML Pipeline</p>
+<h2 id="modules"><a class="header" href="#modules">Modules</a></h2>
+<ul>
+<li><a href="components/ml_training.html">Training Pipeline</a></li>
+<li><a href="components/ml_calibration.html">Model Calibration</a></li>
+<li><a href="components/realtime_scorer.html">Real-Time Scoring Service</a></li>
+<li><a href="components/ml_explainability.html">Model Explainability (SHAP)</a></li>
+<li><a href="components/ml_robustness.html">Model Robustness &amp; Drift</a></li>
+<li><a href="ml_analysis_scripts.html">Analysis &amp; Utility Scripts</a></li>
+</ul>
+<h3 id="ml-tooling"><a class="header" href="#ml-tooling">ML Tooling</a></h3>
+<ul>
+<li><a href="components/ml_tooling_mlflow.html">MLflow Experiment Tracking &amp; Model Registry</a></li>
+<li><a href="components/ml_tooling_optuna.html">Optuna Hyperparameter Tuning</a></li>
+<li><a href="components/ml_tooling_evidently.html">Evidently Model Monitoring</a></li>
+</ul>
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                            <a rel="prev" href="components/etl_system.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <i class="fa fa-angle-left"></i>
+                            </a>
+
+                            <a rel="next prefetch" href="components/ml_training.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <i class="fa fa-angle-right"></i>
+                            </a>
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                    <a rel="prev" href="components/etl_system.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
+
+                    <a rel="next prefetch" href="components/ml_training.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <i class="fa fa-angle-right"></i>
+                    </a>
+            </nav>
+
+        </div>
+
+
+
+
+        <script>
+            window.playground_copyable = true;
+        </script>
+
+
+        <script src="elasticlunr.min.js"></script>
+        <script src="mark.min.js"></script>
+        <script src="searcher.js"></script>
+
+        <script src="clipboard.min.js"></script>
+        <script src="highlight.js"></script>
+        <script src="book.js"></script>
+
+        <!-- Custom JS scripts -->
+        <script src="documentation/mermaid.js"></script>
+
+
+    </div>
+    </body>
+</html>
