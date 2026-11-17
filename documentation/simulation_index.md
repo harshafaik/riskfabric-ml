@@ -1,5 +1,7 @@
 # Data Generation Modules
 
+> **Legacy.** The simulation and world-building code moved to the `scrip` repository. This page is retained as historical documentation; no code here exists in `riskfabric-ml`.
+
 To generate the synthetic financial data required for training a fraud detection model, there are four data generation modules, each responsible for generating a set of financial records, such as customer profiles, account and card details for each customer profile, as well as transactions done by each customer. The relationship between them is as follows:
 
 Customer: single entity

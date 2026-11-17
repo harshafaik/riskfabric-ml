@@ -2,13 +2,13 @@
 authors = ["harshafaik"]
 language = "en"
 src = "documentation"
-title = "RiskFabric Documentation"
+title = "riskfabric-ml Documentation"
 
 [preprocessor.mermaid]
 command = "mdbook-mermaid"
 optional = true
 
 [output.html]
-git-repository-url = "https://github.com/harshafaik/riskfabric"
+git-repository-url = "https://github.com/harshafaik/riskfabric-ml"
 additional-js = ["documentation/mermaid.js"]
 additional-css = ["documentation/custom.css"]

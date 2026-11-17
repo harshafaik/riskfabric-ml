@@ -2,7 +2,7 @@
 
 ## Overview
 
-`seed_redis.py` initializes Redis with pre-computed historical state from the Gold Parquet snapshot. Reads the latest `data/gold/*/fact_transactions_gold.parquet` via DuckDB and writes the Redis key schema expected by `scorer.py`. Run after `etl.rs` produces Gold, before `stream.rs` and `scorer.py` start.
+`seed_redis.py` initializes Redis with pre-computed historical state from the Gold Parquet snapshot. Reads the latest `data/gold/*/fact_transactions_gold.parquet` via DuckDB and writes the Redis key schema expected by `scorer.py`. Run after `riskfabric-etl` produces Gold, before `replay.py` and `scorer.py` start.
 
 ## Schema
 
@@ -45,6 +45,6 @@ All six queries wrapped in `try/except` — prints warning and continues on fail
 
 ## Current Limitations
 
-All five query result sets are loaded entirely into Python memory before writing to Redis. For comparison, the generator peak RSS is 3.6 GB at 3,400 customers and 6.5 GB at 10,000 customers — the seeder loads all card history into memory in a single pass, so the OOM boundary scales similarly. For 1M customers with 365 days of history, the card history query will OOM. [[See benchmarks](performance.md)] Streaming in chunks from DuckDB is required.
+All five query result sets are loaded entirely into Python memory before writing to Redis. For comparison, the generator peak RSS is 3.6 GB at 3,400 customers and 6.5 GB at 10,000 customers — the seeder loads all card history into memory in a single pass, so the OOM boundary scales similarly. For 1M customers with 365 days of history, the card history query will OOM. [[See benchmarks](../performance.md)] Streaming in chunks from DuckDB is required.
 
 `card:{id}:seq` is initialized to `1` (the `row_number()`) rather than true cumulative count. `scorer.py`'s `r.incr()` produces sequence number 2 for the first streaming transaction instead of historical count + 1.

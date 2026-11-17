@@ -19,7 +19,7 @@ The entity schema follows the canonical [entity model](../theory_of_operation.md
 
 </details>
 
-The generator uses a **chunked execution strategy** to handle datasets that exceed available system memory. Measured RSS: 3.6 GB at 3,400 customers (1.54M txn), 6.5 GB at 10,000 customers (4.47M txn). The 5,000-card chunks keep per-chunk allocation bounded, but the final Parquet merge materializes the full dataset — memory grows with total volume. [[See benchmarks](performance.md)] For spatial lookups, the system implements a multi-tier H3 index (resolutions 4 and 6) and a state-level index. This allows for rapid, localized merchant selection during transaction generation without exhaustive searching of the merchant reference dataset.
+The generator uses a **chunked execution strategy** to handle datasets that exceed available system memory. Measured RSS: 3.6 GB at 3,400 customers (1.54M txn), 6.5 GB at 10,000 customers (4.47M txn). The 5,000-card chunks keep per-chunk allocation bounded, but the final Parquet merge materializes the full dataset — memory grows with total volume. [[See benchmarks](../performance.md)] For spatial lookups, the system implements a multi-tier H3 index (resolutions 4 and 6) and a state-level index. This allows for rapid, localized merchant selection during transaction generation without exhaustive searching of the merchant reference dataset.
 
 The choice of **Apache Parquet** as the output format ensures that multi-million row datasets remain compressed and performant for the downstream Python-based ML pipeline and Polars-based ETL.
 

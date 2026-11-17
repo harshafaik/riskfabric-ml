@@ -2,19 +2,8 @@
 
 - [Welcome](index.md)
 
-- [Data Generation Modules](simulation_index.md)
-    - [Customer Data Generator](components/customer_generator.md)
-    - [Account and Card Data Generator](components/account_and_card_generator.md)
-    - [Transactional Data Generator](components/transaction_generator.md)
-    - [Batch Orchestrator](components/batch_generator.md)
-    - [Streaming Orchestrator](components/streaming_generator.md)
-    - [Fraud Injector](components/adversary_logic_engine.md)
-    - [Configuration Module](components/configuration.md)
-
 - [Data & Engineering](engineering_index.md)
     - [Feature Engineering Pipeline](components/etl_system.md)
-    - [Geospatial Reference Pipeline](components/dbt_models.md)
-    - [OSM Reference Extractor](components/reference_preparator.md)
 
 - [Machine Learning Systems](ml_systems_index.md)
     - [Training Pipeline](components/ml_training.md)
@@ -43,6 +32,16 @@
     - [Performance Benchmarks](performance.md)
 
 - [Defunct Implementations](defunct_index.md)
+    - [Legacy Data Generation (moved to scrip)](simulation_index.md)
+        - [Customer Data Generator](components/customer_generator.md)
+        - [Account and Card Data Generator](components/account_and_card_generator.md)
+        - [Transactional Data Generator](components/transaction_generator.md)
+        - [Batch Orchestrator](components/batch_generator.md)
+        - [Streaming Orchestrator](components/streaming_generator.md)
+        - [Fraud Injector](components/adversary_logic_engine.md)
+        - [Configuration Module](components/configuration.md)
+    - [Geospatial Reference Pipeline (moved to scrip)](components/dbt_models.md)
+    - [OSM Reference Extractor (moved to scrip)](components/reference_preparator.md)
     - [ETL Pipeline System (Shell-Pivot Variant)](components/defunct/etl_system_shell_pivot.md)
     - [ClickHouse Batch ETL Architecture](components/defunct/clickhouse_batch_etl.md)
 

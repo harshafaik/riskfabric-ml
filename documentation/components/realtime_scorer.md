@@ -2,7 +2,7 @@
 
 ## Overview
 
-`scorer.py` consumes from the `raw_transactions` Kafka topic (produced by `stream.rs`), computes behavioral features via Redis, and applies the XGBoost model to produce per-transaction fraud probabilities written to ClickHouse `fraud_scores`. Auto-discovers the latest model JSON from `models/` via `model_utils.load_model()`.
+`scorer.py` consumes from the `raw_transactions` Kafka topic (produced by `replay.py` or another producer), computes behavioral features via Redis, and applies the XGBoost model to produce per-transaction fraud probabilities written to ClickHouse `fraud_scores`. Auto-discovers the latest model JSON from `models/` via `model_utils.load_model()`.
 
 ## Schema
 

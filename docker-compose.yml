@@ -54,7 +54,10 @@ services:
       retries: 5
 
   scorer:
-    image: localhost/riskfabric_dlt
+    image: localhost/riskfabric_ml
+    build:
+      context: .
+      dockerfile: Dockerfile.ml
     container_name: riskfabric_scorer
     volumes:
       - .:/usr/app:z
@@ -81,7 +84,10 @@ services:
         condition: service_healthy
 
   monitor:
-    image: localhost/riskfabric_dlt
+    image: localhost/riskfabric_ml
+    build:
+      context: .
+      dockerfile: Dockerfile.ml
     container_name: riskfabric_monitor
     volumes:
       - .:/usr/app:z
@@ -93,6 +99,23 @@ services:
     depends_on:
       clickhouse:
         condition: service_healthy
+
+  replay:
+    image: localhost/riskfabric_ml
+    build:
+      context: .
+      dockerfile: Dockerfile.ml
+    container_name: riskfabric_replay
+    volumes:
+      - .:/usr/app:z
+    working_dir: /usr/app
+    environment:
+      - KAFKA_BOOTSTRAP_SERVERS=redpanda:29092
+    command: python src/ml/replay.py
+    depends_on:
+      redpanda:
+        condition: service_healthy
+    profiles: ["replay"]
 
   grafana:
     image: grafana/grafana-oss:latest

@@ -1,6 +1,6 @@
 # ClickHouse Batch ETL Architecture (Defunct)
 
-**Status:** Superseded by the Parquet-only pipeline per the [Storage Architecture Split](../decisions/storage_architecture_split.md) decision (2026-07-16).
+**Status:** Superseded by the Parquet-only pipeline per the [Storage Architecture Split](../../decisions/storage_architecture_split.md) decision (2026-07-16).
 
 **Current replacement:** Batch ETL reads and writes Parquet files directly. DuckDB (embedded, no server) queries Gold snapshots for ML training. ClickHouse retained only for the live streaming `fraud_scores` path.
 

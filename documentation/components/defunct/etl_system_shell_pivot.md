@@ -1,6 +1,6 @@
 # ETL Pipeline System (Shell-Pivot Variant)
 
-> DEFUNCT. This document describes the superseded implementation that routed all ClickHouse I/O through `podman exec clickhouse-client` shell pipelines. The active implementation now uses the native `clickhouse` Rust crate and is documented in [ETL Pipeline System](etl_system.md). Retained for historical reference and audit.
+> DEFUNCT. This document describes the superseded implementation that routed all ClickHouse I/O through `podman exec clickhouse-client` shell pipelines. The active implementation now uses the native `clickhouse` Rust crate and is documented in [ETL Pipeline System](../etl_system.md). Retained for historical reference and audit.
 
 ## Overview
 
